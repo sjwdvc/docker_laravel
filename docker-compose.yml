@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/php.Dockerfile
-    image: php:8.0.24-fpm-buster
+    #image: php:8.0.24-fpm-buster
     container_name: php
     restart: unless-stopped
     tty: true
@@ -14,15 +14,17 @@ services:
       SERVICE_NAME: app
       SERVICE_TAGS: dev
     working_dir: /var/www
-    volumes:
-      - ./:/var/www
-      # - ./docker-stacks/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    # volumes:
+      # - ./:/var/www
     networks:
       - app-network
 
   #Nginx Service
   webserver:
-    image: nginx:stable-alpine
+    # image: nginx:stable-alpine
+    build:
+      context: .
+      dockerfile: dockerfiles/nginx.Dockerfile
     container_name: nginx
     restart: unless-stopped
     tty: true
@@ -30,16 +32,13 @@ services:
       - "8080:80"
       - "443:443"
     volumes:
-      - ./:/var/www
+      # - ./:/var/www
       - ./docker-stacks/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - app-network
 
   #MySQL Service
   db:
-    # build:
-    #   context: .
-    #   dockerfile: dockerfiles/mariadb.Dockerfile
     image: mariadb:latest
     container_name: mariadb
     restart: unless-stopped
@@ -53,10 +52,6 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
-    # volumes:
-#      - dbdata:/var/lib/mysql/
-      # - ./docker-stacks/mysql/my.cnf:/etc/mysql/my.cnf
-      # - ./ruby_quest.sql:/docker-entrypoint-initdb.d/AppDatabase.sql
     networks:
       - app-network
 
