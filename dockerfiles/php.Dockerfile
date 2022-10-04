@@ -41,12 +41,13 @@ COPY . /var/www
 # Copy existing application directory permissions
 COPY --chown=www:www . /var/www
 
+RUN composer update
+RUN composer install
+RUN composer dump-autoload
+
 # Change current user to www
 USER www
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-RUN composer update
-RUN composer install
-RUN composer dump-autoload
 CMD ["php-fpm"]
